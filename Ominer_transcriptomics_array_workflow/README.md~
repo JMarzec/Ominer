@@ -1,0 +1,133 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fnil\fcharset0 Monaco;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue139;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww26900\viewh19320\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 DESCRIPTION: Shell script runs analysis of Affymetrix  expression arrays - script can be used from different entry points\
+A. Raw CEL files\
+B. Normalised expression matrix\
+\
+\
+Package dependencies:\
+This workflow is dependent on the following packages being installed:\
+library("simpleaffy")\
+library("affy")\
+library("arrayMvout")\
+library("arrayqualitymetrics")\
+library("affyPLM")\
+library("annotate")\
+library("limma")\
+library("sva")\
+library("hgu133plus2.db") (Annotation database relevant to the data from the array platform that is being analysed)\
+library("GOstats")\
+\
+\
+\
+\
+\
+\
+DESCRIPTION OF COMMAND LINE INPUTS required:\
+The line below is the command line arguments that are required to execute the script:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\tx7280\tx7840\tx8400\tx8960\tx9520\tx10080\tx10640\tx11200\tx11760\tx12320\tx12880\tx13440\tx14000\tx14560\tx15120\tx15680\tx16240\tx16800\tx17360\tx17920\tx18480\tx19040\tx19600\tx20160\tx20720\tx21280\tx21840\tx22400\tx22960\tx23520\tx24080\tx24640\tx25200\tx25760\tx26320\tx26880\tx27440\tx28000\tx28560\tx29120\tx29680\tx30240\tx30800\tx31360\tx31920\tx32480\tx33040\tx33600\tx34160\tx34720\tx35280\tx35840\li80\fi-80\ql\qnatural\pardirnatural
+\cf2 R --file=/scratch/ominer/transcriptomics/Affymetrix/affy_expression.R --args  platform=hgu133plus2 dataType=CEL folder=/scratch/ominer/transcriptomics/Affymetrix/CEL project=a.sangaralingam-affy_expression_test target=/scratch/ominer/transcriptomics/Affymetrix/target.txt comp=/scratch/ominer/transcriptomics/Affymetrix/comp.txt  normalisation=rma filter=sd filterval=40 adjust=BH pvalue=0.05 foldchange=0.5 limmamethod=separate analysis=unpaired replicates=no combat=0 aqm=0 \
+\
+Description of command line arguments\
+\
+platform == Affymetrix platform that is being analysed for example for AffymtetrixU133plus2 platform == "hgu133plus2"\
+dataType == Datatype of the data that is being used e.g CEL == raw CEL files, normalised == normalised expression matrix, filtered == filtered expression matrix\
+folder = Full path to to where the raw data is kept or normalised or filtered data. Note if using normalised or filtered data this is in the format of a .txt file\
+project = name of your project; please note that in order for this workflow to work the target files and comparison files need to be placed in a folder with the project name\
+target = Full path to the target file\
+comp = full path to the comparison file\
+normalisation - normalisation method that is to be used e.g gcrma, rma etc\
+filter = method used to filter the normalised expression matrix e.g SD = standard deviation\
+filterval = % to filter the normalised expression matrix - to retain the top 40% most variable genes filterval = 40.\
+adjust = Method used to adjust the False Discovery (FDR) rate within limma BH = Benjamini_Hochberg method\
+pvalue = Pvalue to use as cutoff when listing the differentially expressed genes\
+foldchange = foldchange cutoff to use when listing the differentially expressed genes\
+limmamethod = method to use within lima when comparing the groups\
+analysis = whether a paired/unpaired analysis is executed\
+replicates = yes if there are technical replicates within your experiment\
+combat = This argument applies batch efface correction to your analysis 0 if batch effect correction is not to be applied and 1 if it is to be applied.\
+Please note that if combat is to be applied to your analysis an extra column need to be added to the target file with the column header = "study"\
+aqm = if arrayqualitymetrics is to be used to analyse your data 1= if it is to be used and 0 of it is not to be used.\
+\
+Description of output:\
+Data is output to ominer_results directory a folder is automatically created with this directory with your chosen project name.\
+Subfolders are created within this directory and these are QC, norm, DifferentialExpression \
+QC folder contains the results of running quality control metric on your data\
+Norm - contains the normalised expression matrix and filtered expression matrices\
+Differential Expression - contains the lists of differentially expressed genes, and Venn diagrams \
+\
+Functions:\
+runQC function performs quality control metrics on Affymetrix data and prints out arrays that failed QC to outliers.txt \
+usage:runQC(dataType,dat,target_file,project)\
+Arguments:\
+dataType = CEL,normalised\
+dat = \
+project = name of project\
+target_file = Name of target file\
+\
+Normalisation function performs normalisation on expression matrix \
+usage:Normalisation(normalisation,target_file,dat,project)\
+Arguments:\
+normalisation = normalisation method choose from gcrma,rma\
+target_file = Name of target file\
+dat = \
+project = name of project\
+\
+run_combat function runs batch effect correction on data from one or more studies\
+usage:run_combat(target_file,norm_matrix,project)\
+Arguments:\
+target_file = name of target file\
+norm_matrix = name of the normalised expression matrix\
+project = name of project\
+\
+Filtering:\
+Filtering function extracts the most variable genes passing a certain percentage filter from the normalised expression matrix\
+usage:filtering(filter,filterval,combat,project)\
+Arguments:\
+filter = Method of filtering to be used SD = standard deviation, \
+filterval =  % to filter the normalised expression matrix - to retain the top 40% most variable genes filterval = 40.\
+combat = 0 if combat is not to be used and 1 if combat is to be used\
+project = project name\
+\
+DifferentialExpression:\
+Calculate the genes that are differentially expressed between groups e.g. two biological groups\
+usage:run_limma(target_file,analysis,data,comp_file,replicates,limmamethod,adjust,value,foldchange,platform,project)\
+Arguments:\
+target_file = name of target file\
+analysis = whether analysis is paired/unpaired\
+data = filtered normalised expression matrix\
+comp_file = text file containing the comparison between biological groups that are to be made - up to six different comparisons can be made\
+replicates = yes/no whether technical replicates\
+limmamethod = method to be used within lima e.g separate, global, nestedF\
+adjust = method to be used to adjust the false discovery rate (FDR) e.g BH = Benjamini-Hochberg\
+value = value threshold genes below this value are listed as  differentially expressed\
+foldchange = log fold change value threshold genes with a fold change below this value are listed as differentially expressed\
+platform = Affymetrix platform that is to be analysed e.g for Affymetrix HGU133plus2 argument to be used is hgu133plus2\
+project = name of project\
+\
+Clustering:\
+Performs non-hierarchical clustering on normalised expression matrix \
+please note: currently via the web users are unable to cluster data into their chosen number of clusters and the number of clusters if fixed at 2\
+usage:cluster_all(target_file,2,project)\
+Arguments:\
+target_file = name of target file\
+2 = number of clusters to clusters the data into\
+project - name of project\
+ \
+\
+Venn diagrams\
+Generates venn diagrams from lists of differentially expressed genes\
+usage:generate_venn("decideTestsSummary.txt",project)\
+Arguments:\
+decideTestsSummary.txt = output from running limma to identify differentially expressed genes\
+project = name of project\
+\
+\
+\
+
+\f1 \cf0 \
+}
