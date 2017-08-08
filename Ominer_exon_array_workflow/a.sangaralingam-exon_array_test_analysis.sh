@@ -1,0 +1,3 @@
+#!/bin/sh
+R--file-/scratch/ominer/transcriptomics/Affymetrix/EA_run.R platform=st1 dataType=CEL folder=/var/www/html/onlinetool/temp/a.sangaralingam-TEST_EXON_ARRAY project=a.sangaralingam-TEST_EXON_ARRAY target=/var/www/html/onlinetool/temp/a.sangaralingam-TEST_EXON_ARRAY/target.txt
+comp=/var/www/html/onlinetool/temp/a.sangaralingam-TEST_EXON_ARRAY/comp.txt normalisation=0 filter=sd filterval=40 adjust=BH pvalue=0.05 foldchange=0.5 limmamethod=separate analysis=unpaired replicates=no combat=0 aqm=0 
