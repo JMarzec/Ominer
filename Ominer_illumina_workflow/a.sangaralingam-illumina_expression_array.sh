@@ -1,0 +1,2 @@
+#!/bin/sh
+R --file=/data/BCI-BioInformatics/ominer/illumina_exp.R  --args   platform=ht12v3 dataType=normalised folder=/var/www/html/onlinetool/temp/a.sangaralingam-illumina_expression_array project=a.sangaralingam-illumina_expression_array target=/var/www/html/onlinetool/temp/a.sangaralingam-illumina_expression_array/target.txt comp=/var/www/html/onlinetool/temp/a.sangaralingam-illumina_expression_array/comp.txt normalisation=rsn filter=sd filterval=40 adjust=BH pvalue=0.05 foldchange=0.5 limmamethod=separate analysis=unpaired replicates=no combat=0 aqm=0 
